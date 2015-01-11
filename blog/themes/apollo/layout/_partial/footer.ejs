@@ -1,0 +1,13 @@
+<div class="mb-search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="<%= __('Search') %>">
+    <input type="hidden" name="q" value="site:<%- config.url.replace(/^https?:\/\//, '') %>">
+  </form>
+</div>
+<footer id="footer">
+	<span class="copyright">
+		&copy; <%= date(new Date(), 'YYYY') %> <a href="/about"><%= config.author || config.title %></a> | 
+		Knowledge is power, use at your own risk. | 
+		Generated with <a href="http://hexo.io/" target="_blank">Hexo</a> on <a href="http://nodejs.org/">Node</a>
+	</span>
+</footer>
