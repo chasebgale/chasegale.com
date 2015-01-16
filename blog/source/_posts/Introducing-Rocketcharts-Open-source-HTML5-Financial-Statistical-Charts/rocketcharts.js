@@ -58,39 +58,35 @@ Rocketchart.prototype.init = function(element, settings){
 	// store parent element after looking it up with jquery
 	self.element = $(element);
 	self.width = self.element.width();
-    
-    var height = self.element.height() - 15;
 	
-	self.element.append("<div id=\"panels\" style=\"height: " + height + "px; width: 100%; position: relative;\"></div>");
+    self.element.css("position", "relative");
+	self.element.append("<div id=\"panels\" style=\"height: 100%; width: 100%; position: relative;\"></div>");
 	var panelsElement = $("#panels", self.element);
 	
 	panelsElement.css("overflow", "auto");
-	panelsElement.css("margin", "0px");
-	panelsElement.css("padding", "0px");
-	
-	
+	panelsElement.css("margin", "0");
+    panelsElement.css("padding", "0");
 	
 	$(window).resize(function() {
-		//self.resize($(self.element.context).innerWidth(), $(self.element.context).innerHeight());
+        self.resize(self.element.width(), self.element.height());
 		self.draw();
 	});
 	
-	panelsElement.bind( "resize", function(event, ui) {
-		self.resize(ui.size.width, ui.size.height);
-		self.draw();
-	});
 	panelsElement.bind("mousedown", function(event, ui) {
 		$(this).bind( "mousemove", function(event, ui) {
 			
-			var relativeX = event.pageX - this.offsetLeft;
-		    var relativeY = event.pageY - this.offsetTop;
-			
-			self.headsUpDisplay(relativeX, relativeY);
+			var rect = self.panels[0]._canvas.getBoundingClientRect(); 
+            var relativeX = event.pageX - rect.left;
+            var relativeY = event.pageY - self.element.offset().top + $(this).scrollTop();
+            
+            self.headsUpDisplay(relativeX, relativeY);
+        
 		});
 		this.style.cursor = 'crosshair';
 		
-		var relativeX = event.pageX - this.offsetLeft;
-	    var relativeY = event.pageY - this.offsetTop;
+        var rect = self.panels[0]._canvas.getBoundingClientRect(); 
+		var relativeX = event.pageX - rect.left;
+	    var relativeY = event.pageY - self.element.offset().top + $(this).scrollTop();
 		
 		self.headsUpDisplay(relativeX, relativeY);
 
@@ -114,14 +110,9 @@ Rocketchart.prototype.init = function(element, settings){
 	
 	if (self.settings.resizable)
 		self.element.resizable();
-		
-	if (self.settings.customUI !== true) {
-		// Add our windows for chart management:
-		GenerateDialogs(self.element, self.indicators, self.settings.debug);
-	}
 	
-	self.element.append("<div style=\"height: 15px; width: 100%; background-color: " + rgbToHex(self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b) + ";\">" +
-							"<canvas id=\"dateAxisCanvas\" style=\"vertical-align: top;\" width=\"" + self.width + "\" height=\"15\"></canvas>" +
+	self.element.append("<div style=\"height: 15px; font-size: 1em; line-height: 1em; width: 100%; position: absolute; bottom: 0; z-index: 2; background-color: " + rgbToHex(self.settings.backgroundColor.r, self.settings.backgroundColor.g, self.settings.backgroundColor.b) + ";\">" +
+							"<canvas id=\"dateAxisCanvas\" width=\"" + self.width + "\" height=\"15\"></canvas>" +
 						"</div>");
 	
 	self.dateAxisCanvas = $("#dateAxisCanvas", self.element).get(0);
@@ -147,6 +138,10 @@ Rocketchart.prototype.resize = function(w, h){
 	self.width = w;
 	self.dateAxisCanvas.setAttribute("width", w);
 	var simpleHeight = Math.floor(h / self.panels.length) - 1;
+	
+	if (simpleHeight < self.settings.minimumPanelHeight) {
+		simpleHeight = self.settings.minimumPanelHeight;
+	}
 	
 	for (var i=0; i < self.panels.length; i++) {
 		
@@ -390,6 +385,7 @@ Rocketchart.prototype.addIndicator = function(id, params, series, panel){
 	
 	indicatorID = this.panels[panelID].addIndicator(new Rocketindicator(this, id, this.data[series].data, params));
 	this.indicatorIndex[this.indicatorIndex.length] = {panel: panelID, indicator: indicatorID};
+	this.refreshPanels();
 	this.draw();
 	
 	return (this.indicatorIndex.length - 1);
@@ -426,6 +422,10 @@ Rocketchart.prototype.refreshPanels = function() {
 	
 	// Resize panels:
 	simpleHeight = Math.floor(self.element.height() / self.panels.length) - 1;
+	
+	if (simpleHeight < this.settings.minimumPanelHeight) {
+		simpleHeight = this.settings.minimumPanelHeight;
+	}
 	
 	for (i=0; i < self.panels.length; i++) {
 
@@ -1766,301 +1766,6 @@ function rasterText(imageData, text, x, y) {
 function randomInRange(minVal,maxVal) {
   var randVal = minVal+(Math.random()*(maxVal-minVal));
   return randVal;
-}
-
-
-/*
- * TODO: I am debating this functionality being included in the library...
- * Really, we should just have the methods to add indicators/series/etc and have
- * users develop a gui to consume said methods... but for now we'll keep it; better I guess
- * to illustate 'here is a simple way of doing it.'
- * 
- * UPDATE: Decided to keep it!... what about people with blogs that want to add a financial chart, with no 
- * interest or skillset to develop a UI to manage indicators? Upon reflection, there are tons of use
- * cases where a skeleton ui would be advantageous 
- */
-function GenerateDialogs(element, indicators, debug) {
-	
-	/// Templates:
-	
-	/* Name:	seriesStyleTemplate
-	 * Output:	Markup to style the elements of a series, i.e. color, line thickness, etc
-	 * Input:	ex: {type: 'line', title: "SO Fast %D - 3", color: 0x999999} 
-	 */
-	
-	/* TODO: jQuery discontinued the template engine, look to use "jsrender" instead?
-	$.template("seriesStyleTemplate",
-			   "<div><input type=\"text\" value=\"${title}\"\></div>"
-			  );
-	*/
-	
-	/*
-	<div id="rocketcharts-manage-dialog" style="display: none;">
-		<div id="rocketcharts-manage-dialog-tabs" style="height: 300px;">
-			<ul>
-				<li><a href="#tabs-1">Technical Analysis</a></li>
-				<li><a href="#tabs-2">Appearance</a></li>
-			</ul>
-			<div id="tabs-1">
-				<div id="rocketcharts-manage-dialog-indicator-tree" style="width: 35%; float: left;">
-				</div>
-				<div id="rocketcharts-manage-dialog-indicator-form" style="width: 65%; float: left;">
-				</div>
-				<br style="clear: left;" />
-			</div>
-			<div id="tabs-2">
-			</div>
-		</div>
-	</div>
-	*/
-	
-	/// Dialog shell:
-	var indicatorDialog = ['<div id="rocketcharts-manage-dialog" style="display: none;">',
-	                       '<div id="rocketcharts-manage-dialog-tabs" style="height: 300px;">',
-	                       '<ul>',
-	                       '<li><a href="#tabs-1">Technical Analysis</a></li>',
-	                       '<li><a href="#tabs-2">Appearance</a></li>',
-	                       '</ul>',
-	                       '<div id="tabs-1">',
-	                       '<div id="rocketcharts-manage-dialog-indicator-tree" style="width: 35%; float: left;"></div>',
-	                       '<div id="rocketcharts-manage-dialog-indicator-form" style="width: 65%; float: left;"></div>',
-	                       '<br style="clear: left;" />',
-	                       '</div>',
-	                       '<div id="tabs-2"></div>',
-	                       '</div>',
-	                       '</div>'];
-	
-	$(element).prepend(indicatorDialog.join(''));
-	
-	/*
-	
-	var indicatorDialog = "<div id=\"rocketcharts-dialog-form\" title=\"Manage Rocketchart...\" style=\"display: none;\">" +
-	"<div id=\"tabs\">" +
-		"<ul>" +
-			"<li><a href=\"#tabs-1\">Technical Analysis</a></li>" +
-			"<li><a href=\"#tabs-2\">Appearance</a></li>" +
-		"</ul>" +
-		"<div id=\"tabs-1\">" +
-			"<label for=\"rocketcharts-addIndicator-select\">Type:</label>" +
-			"<select id=\"rocketcharts-addIndicator-select\">";
-	
-	for (var i=0; i < indicators.length; i++) {
-		indicatorDialog += "<option value=\"" + indicators[i].id + "\">" + indicators[i].name + "</option>";
-	}
-				
-	indicatorDialog += "</select><br />" + 
-				"<label for=\"rocketcharts-dataSource-select\">Data Source:</label>" +
-				"<select id=\"rocketcharts-dataSource-select\">" +
-				"</select><br />" + 
-				"<div id=\"indicator-params\">";
-	
-	var calc = new Rocketindicatorcalculations();
-	var indicator = new calc["simplemovingaverage"]();
-				
-	for (var i=0; i < indicator._params.length; i++) {
-		indicatorDialog += "<label for=\"param" + i + "\">" + indicator._params[i].name + "</label>";
-	  
-	  switch (indicator._params[i].type) {
-	  	case "int":
-	  		indicatorDialog += "<input class=\"rocketcharts-input-int\" type=\"text\" name=\"param" + i + "\" value=\"" + indicator._params[i].value + "\"><br />";
-	  		break;
-	  }
-	  
-	}
-
-	indicatorDialog += "</div>" +
-		"</div>" +
-		"<div id=\"tabs-2\">" +
-			"<label for=\"rocketcharts-panel-select\">Panel:</label>" +
-			"<select id=\"rocketcharts-panel-select\">" +
-		"</div>" +
-	"</div>";
-	
-	$(element).prepend(indicatorDialog);
-	
-	$('.rocketcharts-input-int').spinner({ min: 0, max: 100, increment: 'fast' });
-	
-	$( "#rocketcharts-addIndicator-select" ).change(function(){
-		var calc = new Rocketindicatorcalculations();
-		var indicator = new calc[$(this).attr('value')]();
-		var indicatorMarkup = "";
-		
-		$( "#indicator-params" ).empty();
-		
-		for (var i=0; i < indicator._params.length; i++) {
-		  indicatorMarkup += "<label for=\"param" + i + "\">" + indicator._params[i].name + "</label>";
-		  
-		  switch (indicator._params[i].type) {
-		  	case "numeric":
-		  		indicatorMarkup += "<input class=\"rocketcharts-input-numeric\" type=\"text\" name=\"param" + i + "\" value=\"" + indicator._params[i].value + "\"><br />";
-		  		break;
-		  	default:
-		  		indicatorMarkup += "<input type=\"text\" name=\"param" + i + "\" value=\"" + indicator._params[i].value + "\"><br />";
-		  		break;
-		  }
-		  						
-		}
-		
-		$( "#indicator-params" ).append(indicatorMarkup);
-		
-		$('.rocketcharts-input-int').spinner({ min: 0, max: 100, step: 1 });
-		
-		var precision = 0;
-		var stepString = "0.";
-		$('.rocketcharts-input-numeric').each(function (i) {
-			stepString = "0.";
-			precision = $(this).attr('value').split('.')[1].length - 1;
-			for (var i=0; i < precision; i++) {
-				stepString = stepString + "0";
-			}
-			stepString = stepString + "1";
-			$(this).spinner({min: 0, max: 100, step: stepString});
-		});
-		//$('.rocketcharts-input-float').spinner({ min: 0, max: 100, step: 0.1 });
-		
-	});
-	
-	$( "#rocketcharts-addIndicator-dialog-form" ).dialog({
-		autoOpen: false,
-		height: 400,
-		width: 500,
-		modal: true,
-		buttons: {
-			"Add Indicator": function() {
-				var params = [];
-				$("#indicator-params input").each(function(i,e) {
-					
-					params[params.length] = {value: parseInt($(this).attr("value"))};
-				});
-				
-				rocketchart.addIndicator($( "#rocketcharts-addIndicator-select" ).attr("value"),
-										params,
-										parseInt($( "#rocketcharts-dataSource-select" ).attr("value")),
-										parseInt($( "#rocketcharts-panel-select" ).attr("value")));
-				
-				$( this ).dialog( "close" );
-			},
-			Cancel: function() {
-				$( this ).dialog( "close" );
-			}
-		},
-		close: function() {
-			//allFields.val( "" ).removeClass( "ui-state-error" );
-		},
-		open: function () {
-			$( "#rocketcharts-dataSource-select" ).empty();
-			var optionsMarkup = "";
-			
-			for (var i=0; i < rocketchart.data.length; i++) {
-			  optionsMarkup += "<option value=\"" + i + "\">" + rocketchart.data[i].title + "</option>";
-			}
-			
-			$( "#rocketcharts-dataSource-select" ).append(optionsMarkup);
-			
-			
-			$( "#rocketcharts-panel-select" ).empty();
-			optionsMarkup = "";
-			
-			for (var i=0; i < rocketchart.panels.length; i++) {
-			  optionsMarkup += "<option value=\"" + i + "\">Panel " + (i + 1) + "</option>";
-			}
-			
-			$( "#rocketcharts-panel-select" ).append("<option value=\"-1\">New Panel</option>");
-			$( "#rocketcharts-panel-select" ).append(optionsMarkup);
-			
-			$('#tabs').tabs();
-		}
-	});
-	
-	*/
-	
-	$("#rocketcharts-manage-dialog-indicator-tree").dynatree({
-		debugLevel: (debug ? 3 : 0),
-		minExpandLevel: 2,
-        dnd: {
-	      preventVoidMoves: true, // Prevent dropping nodes 'before self', etc.
-	      onDragStart: function(node) {
-	        /** This function MUST be defined to enable dragging for the tree.
-	         *  Return false to cancel dragging of node.
-	         */
-	        return true;
-		  },
-	      onDragEnter: function(node, sourceNode) {
-	        /** sourceNode may be null for non-dynatree droppables.
-	         *  Return false to disallow dropping on node. In this case
-	         *  onDragOver and onDragLeave are not called.
-	         *  Return 'over', 'before, or 'after' to force a hitMode.
-	         *  Return ['before', 'after'] to restrict available hitModes.
-	         *  Any other return value will calc the hitMode from the cursor position.
-	         */
-	        // Prevent dropping a parent below another parent (only sort
-	        // nodes under the same parent)
-	        if (node.parent.span != null) {
-		        if(node.parent.data.title.indexOf("Panel") < 0)
-		        	return false;
-	        } else {
-	        	return false;
-	        }
-	        // Don't allow dropping *over* a node (would create a child)
-	        return ["before", "after"];
-	      },
-	      onDrop: function(node, sourceNode, hitMode, ui, draggable) {
-	        /** This function MUST be defined to enable dropping of items on
-	         *  the tree.
-	         */
-	         if (node.parent.span != null) {
-		        if(node.parent.data.title.indexOf("Panel") < 0)
-		        	return false;
-	        } else {
-	        	return false;
-	        }
-	        
-	        chart.panels[node.data.panelID]._indicators.push( chart.panels[sourceNode.data.panelID]._indicators.splice(sourceNode.data.indicatorID, 1)[0] );
-	        
-	        sourceNode.move(node, hitMode);
-	        
-	        chart.refreshPanels();
-	        chart.draw();
-	      }
-	    }
-	});
-	
-	
-	$( "#rocketcharts-manage-dialog" ).dialog({
-		autoOpen: false,
-		height: 400,
-		width: 750,
-		modal: true,
-		buttons: {
-		},
-		close: function() {
-			//allFields.val( "" ).removeClass( "ui-state-error" );
-		},
-		open: function () {
-			$('#rocketcharts-manage-dialog-tabs').tabs();
-			
-			var i = 0,
-				j = 0,
-				panelIndicators = [];
-			
-			var chart = $(this).data('rocketchart');
-			var tree = $("#rocketcharts-manage-dialog-indicator-tree").dynatree("getTree");
-			
-			tree.getRoot().removeChildren();
-				
-			for (i = 0; i < chart.panels.length; i++) {
-				panelIndicators = [];
-				for (j = 0; j < chart.panels[i]._indicators.length; j++) {
-					panelIndicators[panelIndicators.length] = {title: chart.panels[i]._indicators[j].name, panelID: i, indicatorID: j};
-				}
-				tree.getRoot().addChild({title: "Panel " + (i + 1), isFolder: true, expand: true, children: panelIndicators});
-			}
-			
-		}
-	});
-	
-	
-	
 }
 
 function hexToRgb(hex) {

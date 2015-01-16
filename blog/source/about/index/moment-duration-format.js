@@ -155,7 +155,7 @@
 	// rest
 	function rest(array, callback) {
 		var ret = [];
-		
+
 		each(array, function (item, index) {
 			if (!callback(item)) {
 				ret = array.slice(index);
@@ -326,12 +326,44 @@
 	
 		// trim tokens array
 		if (settings.trim) {
+		
+			var index = 0;
+			var count = 1;
+			var loop = true;
+			
+			while (loop) {
+			
+				if (tokens[index].hasOwnProperty('wholeValue')) {
+					if (tokens[index].wholeValue == 0) {
+						for (var i = index + 1; i < tokens.length; ++i) {
+							if (!tokens[i].hasOwnProperty('wholeValue')) {
+								count++;
+							} else {
+								break;
+							}
+						}
+						
+						tokens.splice(index, count);
+						count = 1;
+					}
+				}
+				index++;
+				
+				if (index >= tokens.length) {
+					loop = false;
+				}
+				
+			}
+		
+			/*
 			tokens = (settings.trim === "left" ? rest : initial)(tokens, function (token) {
 				// return `true` if:
 				// the token is not the least moment token (don't trim the least moment token)
 				// the token is a moment token that does not have a value (don't trim moment tokens that have a whole value)
-				return !(token.isLeast || (token.type != null && token.wholeValue));
+				// return !(token.isLeast || (token.type != null && token.wholeValue));
+				return (token.wholeValue == 0);
 			});
+			*/
 		}
 		
 		
@@ -405,6 +437,8 @@
 		if (settings.trim === "right") {
 			tokens.reverse();
 		}
+		
+		
 
 		return tokens.join("");
 	};

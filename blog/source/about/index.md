@@ -7,8 +7,6 @@ date: 2015-01-08 11:17:43
 	<script type="text/javascript" src="index/moment-duration-format.js"></script>
 	
 	<script type="text/javascript">
-	
-		
 
 		document.addEventListener('DOMContentLoaded', function(event) {
 		
@@ -67,9 +65,8 @@ date: 2015-01-08 11:17:43
 
 #### CHASE BRANDON GALE
 
-Passionate software developer at heart, operating under multiple revolving silly titles, most often **Senior Software Engineer** at the office and **Founder** after. Currently rocking brraaaiinnssss of experience designing, building, testing and deploying *awesome* applications.
+Passionate software developer at heart, operating under multiple revolving titles, most often "Senior Software Engineer." Currently rocking brraaaiinnssss of experience designing, building, testing and deploying *awesome* applications. Yes that's a cheesy date replace, I told you I was passionate.
 
-##### WORK
 
 {% rawblock %}
 	</div>
