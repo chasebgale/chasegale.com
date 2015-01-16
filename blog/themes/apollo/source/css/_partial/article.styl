@@ -22,9 +22,13 @@
   border-top: 5px solid #ddd
 
 .entry-meta-header
+  position: absolute
+  top: .5em
+  left: -200px
+  width: 180px
   font-size: 85%
   a
-    color: color-header
+    color: color-default
     &:hover
       color: color-link
 
@@ -34,13 +38,15 @@
 
   .date
     font-weight: bold
+    font-size: 120%
     a
-	  color: color-header
+      color: color-title
       &:hover
         color: color-link
 
   .commentscount
     font-size: 90%
+    margin-top: 1.5em
 
 .entry-content
   font-size: 105%
