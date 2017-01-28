@@ -406,101 +406,100 @@ fontImage.onload = <span class="hljs-function"><span class="hljs-keyword">functi
 fontImage.src = <span class="hljs-string">"bitmapfont.png"</span>;
 </code></pre>
 <p>Now that we have our image drawn into the canvas, we are able to extract a representative array of pixels and begin processing them. The idea is to iterate over each block (every 4 elements of the array correspond to red, green, blue and alpha channels of a single pixel) and record the significant points for each character.</p>
-<pre><code class="lang-javascript">    <span class="hljs-keyword">var</span> fontPoints = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>();
-    <span class="hljs-keyword">var</span> fontImage = <span class="hljs-keyword">new</span> Image();
-    fontImage.onload = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
-        <span class="hljs-keyword">var</span> bufferCanvas = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"bufferCanvas"</span>);
-        <span class="hljs-keyword">var</span> bufferContext = bufferCanvas.getContext(<span class="hljs-string">"2d"</span>);
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> fontPoints = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>();
+<span class="hljs-keyword">var</span> fontImage = <span class="hljs-keyword">new</span> Image();
+fontImage.onload = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+  <span class="hljs-keyword">var</span> bufferCanvas = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"bufferCanvas"</span>);
+  <span class="hljs-keyword">var</span> bufferContext = bufferCanvas.getContext(<span class="hljs-string">"2d"</span>);
 
-        bufferContext.drawImage(fontImage, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">566</span>, <span class="hljs-number">7</span>);
+  bufferContext.drawImage(fontImage, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">566</span>, <span class="hljs-number">7</span>);
 
-        <span class="hljs-keyword">var</span> w = <span class="hljs-number">566</span>;
-        <span class="hljs-keyword">var</span> fontPixelArray = bufferContext.getImageData(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, w, <span class="hljs-number">7</span>);
+  <span class="hljs-keyword">var</span> w = <span class="hljs-number">566</span>;
+  <span class="hljs-keyword">var</span> fontPixelArray = bufferContext.getImageData(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, w, <span class="hljs-number">7</span>);
 
-        <span class="hljs-comment">// Store pointer directly to array of data to speed up lookups</span>
-        <span class="hljs-keyword">var</span> fontPixelData = fontPixelArray.data;
-        <span class="hljs-keyword">var</span> total = <span class="hljs-number">-1</span>;
-        <span class="hljs-keyword">var</span> x = <span class="hljs-number">0</span>;
-        <span class="hljs-keyword">var</span> y = <span class="hljs-number">0</span>;
-        <span class="hljs-keyword">var</span> index = <span class="hljs-number">-1</span>;
-        <span class="hljs-keyword">var</span> pointsLength = <span class="hljs-number">-1</span>;
+  <span class="hljs-comment">// Store pointer directly to array of data to speed up lookups</span>
+  <span class="hljs-keyword">var</span> fontPixelData = fontPixelArray.data;
+  <span class="hljs-keyword">var</span> total = <span class="hljs-number">-1</span>;
+  <span class="hljs-keyword">var</span> x = <span class="hljs-number">0</span>;
+  <span class="hljs-keyword">var</span> y = <span class="hljs-number">0</span>;
+  <span class="hljs-keyword">var</span> index = <span class="hljs-number">-1</span>;
+  <span class="hljs-keyword">var</span> pointsLength = <span class="hljs-number">-1</span>;
 
-        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i &lt; <span class="hljs-number">95</span>; i++) {
-            <span class="hljs-comment">// Each array element is an array that stores relative x and y coordinates</span>
-            fontPoints[i] = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>();
-        }
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i &lt; <span class="hljs-number">95</span>; i++) {
+    <span class="hljs-comment">// Each array element is an array that stores relative x and y coordinates</span>
+    fontPoints[i] = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>();
+  }
 
-        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i &lt; fontPixelData.length; i++) {
-            <span class="hljs-comment">// Add up the R, G, B values</span>
-            total = fontPixelData[i] + fontPixelData[i+<span class="hljs-number">1</span>] + fontPixelData[i+<span class="hljs-number">2</span>];
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i &lt; fontPixelData.length; i++) {
+    <span class="hljs-comment">// Add up the R, G, B values</span>
+    total = fontPixelData[i] + fontPixelData[i+<span class="hljs-number">1</span>] + fontPixelData[i+<span class="hljs-number">2</span>];
 
-            <span class="hljs-comment">// If the total = 0 it's a black pixel, if not, we need to record it</span>
-            <span class="hljs-keyword">if</span> (total &gt; <span class="hljs-number">0</span>) {
-                x = i / <span class="hljs-number">4</span> % w;
-                y = ( i / <span class="hljs-number">4</span> - x) / w;
+    <span class="hljs-comment">// If the total = 0 it's a black pixel, if not, we need to record it</span>
+    <span class="hljs-keyword">if</span> (total &gt; <span class="hljs-number">0</span>) {
+      x = i / <span class="hljs-number">4</span> % w;
+      y = ( i / <span class="hljs-number">4</span> - x) / w;
 
-                <span class="hljs-comment">// We can derive the character index by dividing by the character width</span>
-                index = <span class="hljs-built_in">Math</span>.floor(x/<span class="hljs-number">6</span>);
+      <span class="hljs-comment">// We can derive the character index by dividing by the character width</span>
+      index = <span class="hljs-built_in">Math</span>.floor(x/<span class="hljs-number">6</span>);
 
-                x = x - (index * <span class="hljs-number">6</span>);
+      x = x - (index * <span class="hljs-number">6</span>);
 
-                pointsLength = fontPoints[index].length;
+      pointsLength = fontPoints[index].length;
 
-                fontPoints[index][pointsLength] = {<span class="hljs-attr">x</span>: x, <span class="hljs-attr">y</span>: y};
-            }
+      fontPoints[index][pointsLength] = {<span class="hljs-attr">x</span>: x, <span class="hljs-attr">y</span>: y};
+    }
 
-            i += <span class="hljs-number">3</span>;
-        }
-
-    };
-    fontImage.src = <span class="hljs-string">"bitmapfont.png"</span>;
+    i += <span class="hljs-number">3</span>;
+  }
+};
+fontImage.src = <span class="hljs-string">"bitmapfont.png"</span>;
 </code></pre>
 <p>As illustrated above, we first create an array containing 94 child arrays – each will hold the significant points of the associated glyph; next, we iterate over the CanvasPixelData array in chunks of 4, screening out black pixels. Once we come upon a non-black point, we derive it’s relative coordinates and character index, then add the point to the appropriate array.</p>
 <p>At this point, we have an array of coordinates to reproduce every glyph in our original image. As I’m sure you have anticipated, we now need a method we can invoke that will imprint these coordinates onto an existing image. Again, code speaks louder than words:</p>
-<pre><code class="lang-javascript">function setPixel(imageData, x, y, r, g, <span class="hljs-keyword">b, </span>a) {
-    index = (parseInt(x) + parseInt(y) * imageData.width) * <span class="hljs-number">4</span><span class="hljs-comment">;</span>
-    imageData[index+<span class="hljs-number">0</span>] = r<span class="hljs-comment">;</span>
-    imageData[index+<span class="hljs-number">1</span>] = g<span class="hljs-comment">;</span>
-    imageData[index+<span class="hljs-number">2</span>] = <span class="hljs-keyword">b;
-</span>    imageData[index+<span class="hljs-number">3</span>] = a<span class="hljs-comment">;</span>
+<pre><code class="lang-javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setPixel</span>(<span class="hljs-params">imageData, x, y, r, g, b, a</span>) </span>{
+    index = (<span class="hljs-built_in">parseInt</span>(x) + <span class="hljs-built_in">parseInt</span>(y) * imageData.width) * <span class="hljs-number">4</span>;
+    imageData[index+<span class="hljs-number">0</span>] = r;
+    imageData[index+<span class="hljs-number">1</span>] = g;
+    imageData[index+<span class="hljs-number">2</span>] = b;
+    imageData[index+<span class="hljs-number">3</span>] = a;
 }
 
-function rasterText(imageData, text, x, y) {
-    var len = text.length<span class="hljs-comment">;</span>
-    var i = <span class="hljs-number">0</span><span class="hljs-comment">;</span>
-    var code = <span class="hljs-number">0</span><span class="hljs-comment">;</span>
-    var characterPixelLength = -<span class="hljs-number">1</span><span class="hljs-comment">;</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">rasterText</span>(<span class="hljs-params">imageData, text, x, y</span>) </span>{
+    <span class="hljs-keyword">var</span> len = text.length;
+    <span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">var</span> code = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">var</span> characterPixelLength = <span class="hljs-number">-1</span>;
 
-    var startX = x<span class="hljs-comment">;</span>
-    var startY = y<span class="hljs-comment">;</span>
+    <span class="hljs-keyword">var</span> startX = x;
+    <span class="hljs-keyword">var</span> startY = y;
 
-    for (i=<span class="hljs-number">0</span><span class="hljs-comment">; i &lt; len; i++) {</span>
-        code = text.charCodeAt(i) - <span class="hljs-number">33</span><span class="hljs-comment">;</span>
+    <span class="hljs-keyword">for</span> (i=<span class="hljs-number">0</span>; i &lt; len; i++) {
+        code = text.charCodeAt(i) - <span class="hljs-number">33</span>;
 
-        if (code &gt; -<span class="hljs-number">1</span>) {
-            characterPixelLength = fontPoints[code].length<span class="hljs-comment">;</span>
+        <span class="hljs-keyword">if</span> (code &gt; <span class="hljs-number">-1</span>) {
+            characterPixelLength = fontPoints[code].length;
 
-            for (var <span class="hljs-keyword">j=0; </span><span class="hljs-keyword">j </span>&lt; characterPixelLength<span class="hljs-comment">; j++) {</span>
+            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j=<span class="hljs-number">0</span>; j &lt; characterPixelLength; j++) {
                 setPixel(imageData,
-                        startX + fontPoints[code][<span class="hljs-keyword">j].x,
-</span>                        startY + fontPoints[code][<span class="hljs-keyword">j].y,
-</span>                        <span class="hljs-number">255</span>, <span class="hljs-number">255</span>, <span class="hljs-number">255</span>, <span class="hljs-number">0xFF</span>)<span class="hljs-comment">;</span>
+                        startX + fontPoints[code][j].x,
+                        startY + fontPoints[code][j].y,
+                        <span class="hljs-number">255</span>, <span class="hljs-number">255</span>, <span class="hljs-number">255</span>, <span class="hljs-number">0xFF</span>);
             }
         }
 
-        startX += <span class="hljs-number">6</span><span class="hljs-comment">;</span>
+        startX += <span class="hljs-number">6</span>;
     }
 }
 </code></pre>
 <p>Our new &quot;rasterText&quot; method accepts a string as one of it&#39;s parameters. For each character in this string, we lookup the number of points required to reproduce it, then for each of those points, we call the helper method &quot;setPixel.&quot; You&#39;ll also notice on line 19, we determine the index in our array by subtracting 33 from the character code. A space resolves to -1, but you&#39;ll notice we increase our &quot;startX&quot; outside that condition, so the space is preserved.</p>
 <p>Here is how we would use this method from start to finish:</p>
-<pre><code class="lang-javascript">var destinationCanvas = document.getElementById(<span class="hljs-string">"destinationCanvas"</span>)<span class="hljs-comment">;</span>
-var <span class="hljs-built_in">context</span> = destinationCanvas.getContext(<span class="hljs-string">"2d"</span>)<span class="hljs-comment">;</span>
-var imageData = <span class="hljs-built_in">context</span>.getImageData(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-built_in">context</span>.width, <span class="hljs-built_in">context</span>.height)<span class="hljs-comment">;</span>
+<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> destinationCanvas = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">"destinationCanvas"</span>);
+<span class="hljs-keyword">var</span> context = destinationCanvas.getContext(<span class="hljs-string">"2d"</span>);
+<span class="hljs-keyword">var</span> imageData = context.getImageData(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, context.width, context.height);
 
-rasterText(imageData<span class="hljs-meta">.data</span>, <span class="hljs-string">"Hello World!"</span>, <span class="hljs-number">10</span>, <span class="hljs-number">10</span>)<span class="hljs-comment">;</span>
+rasterText(imageData.data, <span class="hljs-string">"Hello World!"</span>, <span class="hljs-number">10</span>, <span class="hljs-number">10</span>);
 
-<span class="hljs-built_in">context</span>.putImageData(imageData, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>)<span class="hljs-comment">;</span>
+context.putImageData(imageData, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);
 </code></pre>
 <p>Awesome! However, I&#39;m sure upon reflection you&#39;ll be identifying the limitations of this technique. Namely, you&#39;ll need to load and pre-process a different image for each font face and font size. Up front costs in terms of your effort, sure, but during testing my aforementioned project, text rendering time was reduced by a mean ~20%.</p>
 <p>In closing, the method we built here today is by no means a nail in the text-rendering-poor-performance coffin. What it is, however, is another tool in your arsenal - I urge you to treat it like a scalpel, not a hammer.</p>
@@ -537,16 +536,16 @@ rasterText(imageData<span class="hljs-meta">.data</span>, <span class="hljs-stri
 </code></pre>
 <p>Now for the fun stuff! As I’m sure you’ve observed, we get one argument from this method: ‘filterContext.’ From this ResultExecutingContext we will corral all the information we need to track our user’s actions. Which ActionFilterAttribute method to override depends on what type of information you are trying to capture and the same goes for the approach. To that end, let’s say that in your scenario entities are created using the standard ‘Create’ action. Furthermore, assume that after successful creation you redirect to that entities ‘Details’ action.</p>
 <p>So, with these assumptions fresh in our minds, what is the first step to isolate the data we want?</p>
-<pre><code class="lang-csharp">public class UserActivityAttribute : ActionFilterAttribute
+<pre><code class="lang-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">UserActivityAttribute</span> : <span class="hljs-title">ActionFilterAttribute</span>
 {
-    public override void OnResultExecuting(ResultExecutingContext filterContext)
-    {
-        if ((filterContext.Result is RedirectToRouteResult) &amp;&amp; 
-            (filterContext.RequestContext.HttpContext.Request.RequestType == <span class="hljs-string">"<span class="hljs-keyword">POST</span>"</span>))
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnResultExecuting</span>(<span class="hljs-params">ResultExecutingContext filterContext</span>)
+    </span>{
+        <span class="hljs-keyword">if</span> ((filterContext.Result <span class="hljs-keyword">is</span> RedirectToRouteResult) &amp;&amp; 
+            (filterContext.RequestContext.HttpContext.Request.RequestType == <span class="hljs-string">"POST"</span>))
         {
 
         }
-        base.OnResultExecuting(filterContext);
+        <span class="hljs-keyword">base</span>.OnResultExecuting(filterContext);
     }
 }
 </code></pre>
@@ -613,7 +612,7 @@ rasterText(imageData<span class="hljs-meta">.data</span>, <span class="hljs-stri
 <p>Too cool, right? I love this stuff. Let’s break it down; First off, we pull out and cast the Result object. Secondly, because we know we are in a post, we pull out the form the user submitted. Thirdly, we extract all of the destination route information and use it to switch and further format. Finally, we bundle all of this up into a nice, human readable string and send it off to our utility method to be saved.</p>
 <p>How you format this information is entirely up to you and your use case. As you may have figured out from the psuedo-markup I am generating, in my case I take anything inside the brackets and generate a url from the destination. When history is presented the end user, they see a friendly ‘wall post’ style list, allowing them to easily click through their history.</p>
 <p>Ok, so I said that was the last step, I fibbed. Now we have this badass user tracking ActionFilterAttribute, how do we tell MVC3 to execute this code on every request? Under the project root in your Solution Explorer, find and open a file named ‘Global.asax.’ You’ll see a method titled ‘RegisterRoutes.’ Paste the following code above it.</p>
-<pre><code class="lang-csharp"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">RegisterGlobalFilters</span><span class="hljs-params">(GlobalFilterCollection filters)</span>
+<pre><code class="lang-csharp"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">RegisterGlobalFilters</span>(<span class="hljs-params">GlobalFilterCollection filters</span>)
 </span>{
   filters.Add(<span class="hljs-keyword">new</span> UserActivityAttribute());
 }

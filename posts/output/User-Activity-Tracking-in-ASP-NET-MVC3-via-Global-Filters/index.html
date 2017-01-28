@@ -73,16 +73,16 @@
 </code></pre>
 <p>Now for the fun stuff! As I’m sure you’ve observed, we get one argument from this method: ‘filterContext.’ From this ResultExecutingContext we will corral all the information we need to track our user’s actions. Which ActionFilterAttribute method to override depends on what type of information you are trying to capture and the same goes for the approach. To that end, let’s say that in your scenario entities are created using the standard ‘Create’ action. Furthermore, assume that after successful creation you redirect to that entities ‘Details’ action.</p>
 <p>So, with these assumptions fresh in our minds, what is the first step to isolate the data we want?</p>
-<pre><code class="lang-csharp">public class UserActivityAttribute : ActionFilterAttribute
+<pre><code class="lang-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">UserActivityAttribute</span> : <span class="hljs-title">ActionFilterAttribute</span>
 {
-    public override void OnResultExecuting(ResultExecutingContext filterContext)
-    {
-        if ((filterContext.Result is RedirectToRouteResult) &amp;&amp; 
-            (filterContext.RequestContext.HttpContext.Request.RequestType == <span class="hljs-string">"<span class="hljs-keyword">POST</span>"</span>))
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnResultExecuting</span>(<span class="hljs-params">ResultExecutingContext filterContext</span>)
+    </span>{
+        <span class="hljs-keyword">if</span> ((filterContext.Result <span class="hljs-keyword">is</span> RedirectToRouteResult) &amp;&amp; 
+            (filterContext.RequestContext.HttpContext.Request.RequestType == <span class="hljs-string">"POST"</span>))
         {
 
         }
-        base.OnResultExecuting(filterContext);
+        <span class="hljs-keyword">base</span>.OnResultExecuting(filterContext);
     }
 }
 </code></pre>
@@ -149,7 +149,7 @@
 <p>Too cool, right? I love this stuff. Let’s break it down; First off, we pull out and cast the Result object. Secondly, because we know we are in a post, we pull out the form the user submitted. Thirdly, we extract all of the destination route information and use it to switch and further format. Finally, we bundle all of this up into a nice, human readable string and send it off to our utility method to be saved.</p>
 <p>How you format this information is entirely up to you and your use case. As you may have figured out from the psuedo-markup I am generating, in my case I take anything inside the brackets and generate a url from the destination. When history is presented the end user, they see a friendly ‘wall post’ style list, allowing them to easily click through their history.</p>
 <p>Ok, so I said that was the last step, I fibbed. Now we have this badass user tracking ActionFilterAttribute, how do we tell MVC3 to execute this code on every request? Under the project root in your Solution Explorer, find and open a file named ‘Global.asax.’ You’ll see a method titled ‘RegisterRoutes.’ Paste the following code above it.</p>
-<pre><code class="lang-csharp"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">RegisterGlobalFilters</span><span class="hljs-params">(GlobalFilterCollection filters)</span>
+<pre><code class="lang-csharp"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">RegisterGlobalFilters</span>(<span class="hljs-params">GlobalFilterCollection filters</span>)
 </span>{
   filters.Add(<span class="hljs-keyword">new</span> UserActivityAttribute());
 }

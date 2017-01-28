@@ -20,54 +20,53 @@ fontImage.src = "bitmapfont.png";
 Now that we have our image drawn into the canvas, we are able to extract a representative array of pixels and begin processing them. The idea is to iterate over each block (every 4 elements of the array correspond to red, green, blue and alpha channels of a single pixel) and record the significant points for each character.
 
 ```javascript
-    var fontPoints = new Array();
-    var fontImage = new Image();
-    fontImage.onload = function(){
-        var bufferCanvas = document.getElementById("bufferCanvas");
-        var bufferContext = bufferCanvas.getContext("2d");
- 
-        bufferContext.drawImage(fontImage, 0, 0, 566, 7);
- 
-        var w = 566;
-        var fontPixelArray = bufferContext.getImageData(0, 0, w, 7);
- 
-        // Store pointer directly to array of data to speed up lookups
-        var fontPixelData = fontPixelArray.data;
-        var total = -1;
-        var x = 0;
-        var y = 0;
-        var index = -1;
-        var pointsLength = -1;
- 
-        for (var i=0; i < 95; i++) {
-            // Each array element is an array that stores relative x and y coordinates
-            fontPoints[i] = new Array();
-        }
- 
-        for (var i=0; i < fontPixelData.length; i++) {
-            // Add up the R, G, B values
-            total = fontPixelData[i] + fontPixelData[i+1] + fontPixelData[i+2];
-            
-            // If the total = 0 it's a black pixel, if not, we need to record it
-            if (total > 0) {
-                x = i / 4 % w;
-                y = ( i / 4 - x) / w;
- 
-                // We can derive the character index by dividing by the character width
-                index = Math.floor(x/6);
- 
-                x = x - (index * 6);
- 
-                pointsLength = fontPoints[index].length;
- 
-                fontPoints[index][pointsLength] = {x: x, y: y};
-            }
-            
-            i += 3;
-        }
-        
-    };
-    fontImage.src = "bitmapfont.png";
+var fontPoints = new Array();
+var fontImage = new Image();
+fontImage.onload = function(){
+  var bufferCanvas = document.getElementById("bufferCanvas");
+  var bufferContext = bufferCanvas.getContext("2d");
+
+  bufferContext.drawImage(fontImage, 0, 0, 566, 7);
+
+  var w = 566;
+  var fontPixelArray = bufferContext.getImageData(0, 0, w, 7);
+
+  // Store pointer directly to array of data to speed up lookups
+  var fontPixelData = fontPixelArray.data;
+  var total = -1;
+  var x = 0;
+  var y = 0;
+  var index = -1;
+  var pointsLength = -1;
+
+  for (var i=0; i < 95; i++) {
+    // Each array element is an array that stores relative x and y coordinates
+    fontPoints[i] = new Array();
+  }
+
+  for (var i=0; i < fontPixelData.length; i++) {
+    // Add up the R, G, B values
+    total = fontPixelData[i] + fontPixelData[i+1] + fontPixelData[i+2];
+    
+    // If the total = 0 it's a black pixel, if not, we need to record it
+    if (total > 0) {
+      x = i / 4 % w;
+      y = ( i / 4 - x) / w;
+
+      // We can derive the character index by dividing by the character width
+      index = Math.floor(x/6);
+
+      x = x - (index * 6);
+
+      pointsLength = fontPoints[index].length;
+
+      fontPoints[index][pointsLength] = {x: x, y: y};
+    }
+    
+    i += 3;
+  }
+};
+fontImage.src = "bitmapfont.png";
 ```
 
 As illustrated above, we first create an array containing 94 child arrays – each will hold the significant points of the associated glyph; next, we iterate over the CanvasPixelData array in chunks of 4, screening out black pixels. Once we come upon a non-black point, we derive it’s relative coordinates and character index, then add the point to the appropriate array.

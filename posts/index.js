@@ -9,8 +9,8 @@ var remove 	= require('remove');
 var copy 		= require('recursive-copy');
 
 marked.setOptions({
-  highlight: function (code) {
-    return require('highlight.js').highlightAuto(code).value;
+  highlight: function (code, lang) {
+    return require('highlight.js').highlight(lang, code).value;
   }
 });
 
