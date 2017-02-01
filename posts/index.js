@@ -68,7 +68,7 @@ function compileIndex(posts, callback) {
 				return 0;
 			});
 			async.mapSeries(posts, function(post, callback) {
-				var formatted = post.post.replace(new RegExp('src="resource/', 'g'), 'src="/' + post.folder + '/resource/');
+				var formatted = post.post.replace(new RegExp('src="resource/', 'g'), 'src="/posts/' + post.folder + '/resource/');
 				fs.appendFile(info.index, formatted, function(err) {
 					callback(err);
 				});
@@ -152,7 +152,7 @@ function compilePost(file, callback) {
 				info.date.format('YYYY/MM/DD/'),
 				file);
 			*/
-			info.destination = path.join('./output/', file);
+			info.destination = path.join('./output/posts/', file);
 			info.index = path.join(info.destination, 'index.html');
 			info.content = '';
 
