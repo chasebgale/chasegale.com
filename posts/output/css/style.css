@@ -1213,7 +1213,7 @@ pre .deletion {
 }
 
 #index {
-  margin: 40px 0;
+  padding: 50px 0;
 }
 
 .index-li {
@@ -1228,12 +1228,12 @@ pre .deletion {
 }
 
 #about {
-  margin: 40px 0;
+  padding: 50px 0;
 }
 
 #about img {
   float: left;
-  padding-right: 8px;
+  padding-right: 20px;
   max-width: 50%;
 }
 
