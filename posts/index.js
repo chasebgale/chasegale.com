@@ -1,12 +1,12 @@
-var fs  		= require('fs');
-var ejs 		= require('ejs');
-var path		= require('path');
+var fs  	= require('fs');
+var ejs 	= require('ejs');
+var path	= require('path');
 var async 	= require('async');
 var marked 	= require('marked');
 var mkdirp 	= require('mkdirp');
 var moment	= require('moment');
 var remove 	= require('remove');
-var copy 		= require('recursive-copy');
+var copy 	= require('recursive-copy');
 
 marked.setOptions({
   highlight: function (code, lang) {
@@ -16,10 +16,10 @@ marked.setOptions({
 
 async.waterfall([
 	cleanOutputFolder,
-  collectPostFolders,
-  compilePosts,
-  compileIndex,
-  copyTemplateFolders
+	collectPostFolders,
+	compilePosts,
+	compileIndex,
+	copyTemplateFolders
 ], function (err, result) {
   console.log(result);
 });
@@ -107,7 +107,7 @@ function copyTemplateFolders(callback) {
 		async.map(files, function(file, callback) {
 			fs.stat(path.join('./template', file), function(err, stats) {
 				if (!err) {
-					if (stats.isDirectory()) {
+					if (stats.isDirectory() || file == "favicon.ico") {
 						console.log('Copying: ' + file);
 						copy(path.join('./template', file), path.join('./output', file), function(err) {
 							if (err) return callback(err);

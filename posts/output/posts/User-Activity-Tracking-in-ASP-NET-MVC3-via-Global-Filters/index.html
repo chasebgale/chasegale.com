@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Conquering Mountains with Technology</title>
+  <title>Chase B. Gale</title>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
@@ -15,7 +15,9 @@
   <meta name="twitter:title" content="Conquering Mountains with Technology">
   <meta name="twitter:description">
 
-  <link rel="icon" href="/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
   
   <link rel="stylesheet" href="/css/style.css" type="text/css">
   <link rel="stylesheet" href="/vendor/fancybox/jquery.fancybox.css" media="screen" type="text/css">
@@ -65,8 +67,8 @@
 <p>Still with me? Awesome. Open up your newly created class and inherit from ‘ActionFilterAttribute.’ ActionFilterAttribute has several methods you can override which you can read about individually <a href="http://msdn.microsoft.com/en-us/library/system.web.mvc.actionfilterattribute.aspx">over at MSDN</a>; For now though, let’s focus on ‘OnResultExecuting.’ As you might have guessed, this method is fired before the result is executed. Go ahead and override this method, bringing your class to look something like this:</p>
 <pre><code class="lang-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">UserActivityAttribute</span> : <span class="hljs-title">ActionFilterAttribute</span>
 {
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnResultExecuting</span>(<span class="hljs-params">ResultExecutingContext filterContext</span>)
-    </span>{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnResultExecuting</span>(<span class="hljs-params">ResultExecutingContext filterContext</span>)</span>
+    {
         <span class="hljs-keyword">base</span>.OnResultExecuting(filterContext);
     }
 }
@@ -75,8 +77,8 @@
 <p>So, with these assumptions fresh in our minds, what is the first step to isolate the data we want?</p>
 <pre><code class="lang-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">UserActivityAttribute</span> : <span class="hljs-title">ActionFilterAttribute</span>
 {
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnResultExecuting</span>(<span class="hljs-params">ResultExecutingContext filterContext</span>)
-    </span>{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnResultExecuting</span>(<span class="hljs-params">ResultExecutingContext filterContext</span>)</span>
+    {
         <span class="hljs-keyword">if</span> ((filterContext.Result <span class="hljs-keyword">is</span> RedirectToRouteResult) &amp;&amp; 
             (filterContext.RequestContext.HttpContext.Request.RequestType == <span class="hljs-string">"POST"</span>))
         {
@@ -89,8 +91,8 @@
 <p>As you can see, we check that the result primed for execution is of the type ‘RedirectToRouteResult.’ Additionally, we ensure the request was a POST, the default request type for ‘Create’ methods. Now that we have this in place, let’s extract some information about the RouteData of the <strong>Request</strong> and filter down further.</p>
 <pre><code class="lang-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">UserActivityAttribute</span> : <span class="hljs-title">ActionFilterAttribute</span>
 {
-    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnResultExecuting</span>(<span class="hljs-params">ResultExecutingContext filterContext</span>)
-    </span>{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnResultExecuting</span>(<span class="hljs-params">ResultExecutingContext filterContext</span>)</span>
+    {
         <span class="hljs-keyword">if</span> ((filterContext.Result <span class="hljs-keyword">is</span> RedirectToRouteResult) &amp;&amp;
             (filterContext.RequestContext.HttpContext.Request.RequestType == <span class="hljs-string">"POST"</span>))
         {
@@ -109,8 +111,8 @@
 <p>Now we have the controller and action of the request, using this information we filter out actions not matching our mock scenario, create calls. The final step is to decide what information to store and to format it accordingly. Let’s assume this application tracks brick-and-mortar stores and the customers that frequent them. We have two different controllers, Customer and Store, and based on what we are creating we want to change the formatting. I’ll let the code do the talking:</p>
 <pre><code class="lang-csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title">UserActivityAttribute</span> : <span class="hljs-title">ActionFilterAttribute</span>
 {
-  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnResultExecuting</span>(<span class="hljs-params">ResultExecutingContext filterContext</span>)
-  </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">override</span> <span class="hljs-keyword">void</span> <span class="hljs-title">OnResultExecuting</span>(<span class="hljs-params">ResultExecutingContext filterContext</span>)</span>
+  {
     <span class="hljs-keyword">if</span> ((filterContext.Result <span class="hljs-keyword">is</span> RedirectToRouteResult) &amp;&amp;
         (filterContext.RequestContext.HttpContext.Request.RequestType == <span class="hljs-string">"POST"</span>))
     {
@@ -149,8 +151,8 @@
 <p>Too cool, right? I love this stuff. Let’s break it down; First off, we pull out and cast the Result object. Secondly, because we know we are in a post, we pull out the form the user submitted. Thirdly, we extract all of the destination route information and use it to switch and further format. Finally, we bundle all of this up into a nice, human readable string and send it off to our utility method to be saved.</p>
 <p>How you format this information is entirely up to you and your use case. As you may have figured out from the psuedo-markup I am generating, in my case I take anything inside the brackets and generate a url from the destination. When history is presented the end user, they see a friendly ‘wall post’ style list, allowing them to easily click through their history.</p>
 <p>Ok, so I said that was the last step, I fibbed. Now we have this badass user tracking ActionFilterAttribute, how do we tell MVC3 to execute this code on every request? Under the project root in your Solution Explorer, find and open a file named ‘Global.asax.’ You’ll see a method titled ‘RegisterRoutes.’ Paste the following code above it.</p>
-<pre><code class="lang-csharp"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">RegisterGlobalFilters</span>(<span class="hljs-params">GlobalFilterCollection filters</span>)
-</span>{
+<pre><code class="lang-csharp"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">RegisterGlobalFilters</span>(<span class="hljs-params">GlobalFilterCollection filters</span>)</span>
+{
   filters.Add(<span class="hljs-keyword">new</span> UserActivityAttribute());
 }
 </code></pre>
@@ -169,15 +171,15 @@
 <hr class="article-divider" />    </div>
 
     <div id="about">
-      <img src="/img/darth_chase.jpg" alt="Darth Chase Brandon Gale" />
+      <img src="/img/beer_chase.jpg" alt="Chase Brandon Gale" />
       <h1>Chase Brandon Gale</h1>
-      <p>Passionate software developer at heart, operating under multiple revolving titles, most often "Senior Software Engineer." Currently rocking 16 years of experience designing, building, testing and deploying <i>awesome</i> applications.</p>
+      <p>Passionate software developer at heart, operating under multiple revolving titles, most often "Lead/Senior Software Engineer." 18 years of experience designing, building, testing and deploying <i>awesome</i> applications.</p>
       <div style="clear: both;"></div>
     </div>
 
     <footer id="footer">
       <span class="copyright">
-        &copy; 2010-2017 Conquering Mountains with Technology, LLC | 
+        &copy; 2010-2019 Conquering Mountains with Technology, LLC | 
         Knowledge is power, use at your own risk.
       </span>
     </footer>
