@@ -573,7 +573,7 @@ pre .deletion {
 .entry-header .date {
   font-weight: bold;
 }
-.entry-meta-header color: color-header:hover {
+.entry-meta-header .color-header:hover {
   color: #33a6b8;
 }
 .entry-meta-header .commentscount {
@@ -1229,7 +1229,7 @@ pre .deletion {
 
 #about {
   padding: 50px 0;
-  height: 75vh;
+  height: 80vh;
 }
 
 #about img {
