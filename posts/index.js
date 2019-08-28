@@ -77,17 +77,7 @@ function compileIndex(posts, callback) {
 			});
 		},
 		function(callback) {
-			// Index
-			ejs.renderFile(path.join('./template/', 'index.ejs'), {posts: posts}, function(err, data) {
-				if (err) return callback(err);
-				
-				fs.appendFile(info.index, data, function(err) {
-					callback(err);
-				});
-			});
-		},
-		function(callback) {
-			ejs.renderFile(path.join('./template/', 'footer.ejs'), function(err, data) {
+			ejs.renderFile(path.join('./template/', 'footer.ejs'), {posts: posts}, function(err, data) {
 				if (err) return callback(err);
 				
 				fs.appendFile(info.index, data, function(err) {
@@ -101,6 +91,19 @@ function compileIndex(posts, callback) {
 		callback(null, info);
 	});
 }
+
+/*
+function(callback) {
+	// Index
+	ejs.renderFile(path.join('./template/', 'index.ejs'), {posts: posts}, function(err, data) {
+		if (err) return callback(err);
+		
+		fs.appendFile(info.index, data, function(err) {
+			callback(err);
+		});
+	});
+},
+*/
 
 function copyTemplateFolders(callback) {
 	fs.readdir('./template/', function(err, files) {
