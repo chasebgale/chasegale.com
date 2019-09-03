@@ -8,7 +8,9 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
+	"github.com/Depado/bfchroma"
 	"github.com/otiai10/copy"
 	"gopkg.in/russross/blackfriday.v2"
 )
@@ -16,7 +18,7 @@ import (
 type post struct {
 	Folder         string
 	Title          string `json:"title"`
-	Created        uint64 `json:"ts"`
+	Created        int64  `json:"ts"`
 	CreatedDisplay string
 	Content        template.HTML
 }
@@ -94,6 +96,9 @@ func collectPosts() (*[]post, error) {
 
 			p.Folder = f.Name()
 
+			t := time.Unix(p.Created, 0)
+			p.CreatedDisplay = t.Format("Jan 02, 2006")
+
 			pb, err := ioutil.ReadFile(base + "post.md")
 			if err != nil {
 				log.Println(err)
@@ -101,7 +106,7 @@ func collectPosts() (*[]post, error) {
 				continue
 			}
 
-			pc := string(blackfriday.Run(pb))
+			pc := string(blackfriday.Run(pb, blackfriday.WithRenderer(bfchroma.NewRenderer())))
 			pc = strings.ReplaceAll(pc, `src="resource/`, `src="/posts/`+p.Folder+`/resource/`)
 
 			p.Content = template.HTML(pc)

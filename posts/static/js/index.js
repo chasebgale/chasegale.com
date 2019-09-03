@@ -22,4 +22,7 @@
     $(".nav").toggleClass("active")
   });
 
+  let now = new Date();
+  $("#experience").text(now.getUTCFullYear() - 2001);
+
 })(jQuery);
