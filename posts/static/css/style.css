@@ -963,6 +963,10 @@ pre .deletion {
   padding-bottom: 10px;
 }
 
+#about > p {
+    padding-bottom: 20px;
+}
+
 #chase-link {
   opacity: 0.75;
 }
