@@ -1,0 +1,4 @@
+Headless chrome has been in the toolbox of every great web engineer for some time now, and the introduction of Puppeteer has allowed deep, meaningful integrations into build and test pipelines. What I see far more rarely, however, is headless chrome shining bright outside of these use-cases - luckily the project I am working on has a dark underbelly to illuminate: user generated content.
+
+Imagine you have a situation in which your end-users can produce HTML - maybe not directly, maybe the HTML is generated from Markdown or some other source - but at the end of the workflow, you have markup. Also imagine users will have thier own libraries of markup and corresponding data and you will need to allow them to easily preview and browse thier collection (The floor is made of NDA lava) and you can start to see the use-case for static, pre-rendered previews.
+
