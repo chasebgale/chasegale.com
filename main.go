@@ -109,9 +109,12 @@ func collectPosts() (*[]post, error) {
 				continue
 			}
 
-			//pc := string(blackfriday.Run(pb))
-			pc := string(blackfriday.Run(pb, blackfriday.WithRenderer(bfchroma.NewRenderer())))
+			pc := string(blackfriday.Run(pb, blackfriday.WithRenderer(bfchroma.NewRenderer(bfchroma.Style("monokai")))))
 			pc = strings.ReplaceAll(pc, `src="resource/`, `src="/posts/`+p.Folder+`/resource/`)
+
+			// TODO: Need to update the chroma javascript lexer, but until then, search and replace
+			pc = strings.ReplaceAll(pc, `<span style="color:#a6e22e">await</span>`, `<span style="color:#ae81ff">await</span>`)
+			pc = strings.ReplaceAll(pc, `<span style="color:#a6e22e">async</span>`, `<span style="color:#ae81ff">async</span>`)
 
 			p.Content = template.HTML(pc)
 

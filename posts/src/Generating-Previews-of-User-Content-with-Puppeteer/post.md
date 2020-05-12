@@ -2,7 +2,7 @@ Headless chrome has been in the toolbox of every great web engineer for some tim
 
 Imagine you have a situation in which your end-users can produce HTML - maybe not directly, maybe the HTML is generated from Markdown or some other source - but at the end of the workflow, you have markup. Also imagine users will have thier own libraries of markup and corresponding data and you will need to allow them to easily preview and browse thier collection (The floor is made of NDA lava) and you can start to see the use-case for static, pre-rendered previews.
 
-Fortunatley Google Cloud will make all of this very easy for us: serverless functions that support Puppeteer out-of-the-box and Firebase which will trigger said serverless functions effortlessly. Step 1, head over to https://console.firebase.google.com/ and create a new project. Fire up VSCode or your preferred IDE of choice and get into a new workspace. Install/setup dependencies, be sure to select both "hosting" and "functions" when prompted by firebase:
+Fortunatley Google Cloud will make all of this very easy for us: serverless functions that support Puppeteer out-of-the-box and Firebase which will trigger said serverless functions effortlessly. Step 1, head over to https://console.firebase.google.com/ and create a new project. Fire up VSCode or your preferred IDE of choice and get into a new workspace.
 
 ```bash
 npm i -g firebase-tools
@@ -18,7 +18,7 @@ npm i --save child-process-promise
 npm i --save firebase-admin
 ```
 
-Awesome! Now that those copy and paste muscles are all fired up, let's open up 'index.js' under the functions directory - we'll want to import our dependencies, initialize our app (firebase automagically acquiring tokens) and create a shell of a function:
+Awesome! Now that those copy and paste muscles are all fired up, let's open up 'index.js' under the functions directory - we'll want to import our dependencies, initialize our app and create a shell of a function:
 
 ```javascript
     const os = require('os');
@@ -78,7 +78,7 @@ Let's start by grabbing the data we need, both pre-change and post-change - and 
 
 Once we determine we need to continue, we launch Puppeteer and wait for a new page. Puppeteer has a myriad of options and command line arguments - if you'd like to check them out and tailor to your environment, I encourage you to RTFM @ https://github.com/puppeteer/puppeteer - but for now just roll with these sane defaults. 
 
-Afer waiting for headless chrome to 'boot up' we can now wait for viewport readiness and fill it with content. In the example below I am pulling the size from user settings, but you can of course pull from anywhere you'd like. You'll also notice I am feeding html directly from our firestore document into our page, whereas in production you'd likely *not* be doing this (illustation purposes only, wit.soul === brevity):
+After waiting for headless chrome to 'boot up' we can now wait for viewport readiness and fill it with content. In the example below I am pulling the size from user settings, but you can of course pull from anywhere you'd like. You'll also notice I am feeding html directly from our firestore document into our page, whereas in production you'd likely *not* be doing this (illustation purposes only, wit.soul === brevity):
 
 ```javascript
     
@@ -122,7 +122,7 @@ Awesome! At this point, somewhere on a virtualized piece of memory, deep, deeeee
     
 ```
 
-So now we have two beautiful images sitting in a temp directory on an ephemeral linux vm. Let's show off our work! We'll need to send these bad boys to Google Cloud Storage so they can be accessed by the public at large:
+So now we have two beautiful images sitting in a temp directory on an ephemeral linux vm. Let's show off our work! We'll need to send these bad boys to Google Cloud Storage so they can be accessed by the public, writ large:
 
 ```javascript
 
