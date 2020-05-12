@@ -41,21 +41,25 @@ func main() {
 
 	posts, err := collectPosts()
 	if err != nil {
+		log.Println("collectPosts()")
 		log.Fatalln(err)
 	}
 
 	template, err := compileTemplate()
 	if err != nil {
+		log.Println("compileTemplate()")
 		log.Fatalln(err)
 	}
 
 	err = outputPosts(template, posts)
 	if err != nil {
+		log.Println("outputPosts()")
 		log.Fatalln(err)
 	}
 
 	err = outputIndex(template, posts)
 	if err != nil {
+		log.Println("outputIndex()")
 		log.Fatalln(err)
 	}
 }
@@ -65,8 +69,7 @@ func cleanOutput() error {
 	if err != nil {
 		return err
 	}
-
-	return os.Mkdir("./output", 0700)
+	return os.Mkdir("./output", 0777)
 }
 
 func collectPosts() (*[]post, error) {
@@ -106,6 +109,7 @@ func collectPosts() (*[]post, error) {
 				continue
 			}
 
+			//pc := string(blackfriday.Run(pb))
 			pc := string(blackfriday.Run(pb, blackfriday.WithRenderer(bfchroma.NewRenderer())))
 			pc = strings.ReplaceAll(pc, `src="resource/`, `src="/posts/`+p.Folder+`/resource/`)
 
@@ -151,13 +155,16 @@ func outputIndex(template *template.Template, posts *[]post) error {
 
 func outputPosts(template *template.Template, posts *[]post) error {
 	for _, p := range *posts {
-		err := copy.Copy("./posts/src/"+p.Folder+"/resource", "./output/posts/"+p.Folder+"/resource")
-		if err != nil {
-			return err
+		if _, err := os.Stat("./posts/src/" + p.Folder + "/resource"); !os.IsNotExist(err) {
+			err := copy.Copy("./posts/src/"+p.Folder+"/resource", "./output/posts/"+p.Folder+"/resource")
+			if err != nil {
+				return err
+			}
 		}
 
 		f, err := os.Create("./output/posts/" + p.Folder + "/index.html")
 		if err != nil {
+			log.Println("OH NO")
 			return err
 		}
 		defer f.Close()
