@@ -844,12 +844,17 @@ pre .deletion {
     display: none !important;
   }
   #header {
-    margin: 2em 0;
+    margin-bottom: 10px;
     text-align: center;
     position: static;
+    flex-wrap: wrap;
   }
-  .blog-title {
-    float: none;
+  #header > .blog-title {
+    flex: 0 0 100% !important;
+  }
+  #header > .nav {
+    width: 100%;
+    text-align: right;
   }
   #main {
     padding-left: 0;
@@ -972,6 +977,7 @@ pre .deletion {
 
 #contributions {
     height: 125px;
+    --scale: 0.75;
 }
 
 #contributions > svg > g > text {
@@ -988,10 +994,10 @@ pre .deletion {
 }
 
 #contributions > svg > g {
-    transform: translate(-100%, 20px) scale(0.75);
+    transform: translate(-100%, 20px) scale(var(--scale));
     animation: slide-in-calendar 500ms forwards;
 }
 
 @keyframes slide-in-calendar {
-    100% { transform: translate(-12px, 20px) scale(0.75); }
+    100% { transform: translate(0px, 20px) scale(var(--scale)); }
 }
