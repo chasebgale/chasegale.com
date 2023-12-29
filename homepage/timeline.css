@@ -1,0 +1,94 @@
+:root {
+    --timeline-color: rgb(173, 173, 173);
+    --work-color: rgb(126, 209, 90);
+    --fun-color: rgb(255, 191, 101);
+}
+
+#timeline {
+    line-height: 1.5em;
+    font-size: 14px;
+    width: 100%;
+    margin: 20px auto;
+    position: relative;
+    transition: all 0.4s ease;
+}
+
+/* LINE IN MIDDLE */
+#timeline:before {
+    content: "";
+    width: 3px;
+    height: 100%;
+    background: var(--timeline-color);
+    left: 50%;
+    top: 0;
+    position: absolute;
+}
+
+#timeline > .timeline-item {
+    margin-bottom: 50px;
+    position: relative;
+    display: flex;
+}
+
+#timeline > .timeline-item > .timeline-icon {
+    background: var(--timeline-color);
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    overflow: hidden;
+    margin-left: -23px;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#timeline > .timeline-item > .timeline-content {
+    flex-basis: 40%;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+#timeline > .timeline-item > .timeline-content:before {
+    content: '';
+    position: absolute;
+    left: 45%;
+    top: 20px;
+    width: 0;
+    height: 0;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-left: 7px solid var(--work-color);
+}
+
+#timeline > .timeline-item > .timeline-content > h2 {
+    padding: 15px;
+    background: var(--work-color);
+    color: #fff;
+    margin: -20px -20px 0 -20px;
+    font-weight: 500;
+    border-radius: 3px 3px 0 0;
+}
+
+#timeline > .timeline-item > .timeline-content.right {
+    right: 0;
+    position: absolute;
+    left: 55%;
+}
+
+#timeline > .timeline-item > .timeline-content.right > h2 {
+    background: var(--fun-color);
+}
+
+#timeline > .timeline-item > .timeline-content.right:before {
+    content: '';
+    left: -7px;
+    border-left: 0;
+    border-right: 7px solid var(--fun-color);
+}
