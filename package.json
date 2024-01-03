@@ -1,0 +1,21 @@
+{
+  "name": "chasegale.com",
+  "version": "1.0.0",
+  "description": "Personal site",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chasebgale/chasegale.com.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chasebgale/chasegale.com/issues"
+  },
+  "homepage": "https://github.com/chasebgale/chasegale.com#readme",
+  "devDependencies": {
+    "serve": "^14.2.1"
+  }
+}

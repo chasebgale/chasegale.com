@@ -1,0 +1,134 @@
+:root {
+    --timeline-color: #FF6000;
+    --work-color: #454545;
+    --fun-color: #FFA559;
+}
+
+/*
+:root {
+    --timeline-color: #749BC2;
+    --work-color: #4682A9;
+    --fun-color: #91C8E4;
+}
+*/
+
+#timeline {
+    line-height: 1.5em;
+    font-size: 14px;
+    width: 100%;
+    margin: 20px auto;
+    position: relative;
+    transition: all 0.4s ease;
+}
+
+/* LINE IN MIDDLE */
+#timeline:before {
+    content: "";
+    width: 3px;
+    height: 100%;
+    background: var(--timeline-color);
+    left: 50%;
+    top: 0;
+    position: absolute;
+}
+
+.timeline-item {
+    margin-bottom: 50px;
+    display: grid;
+    grid-template-columns: 45% 10% 45%;
+}
+
+.timeline-icon {
+    background: var(--timeline-color);
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    left: 50%;
+    overflow: hidden;
+    margin-left: -23px;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-column-start: 2;
+    grid-column-end: 2;
+}
+
+.timeline-content {
+    height: min-content;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 3px 16px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.timeline-content.left {
+    grid-column-start: 1;
+    grid-column-end: 1;
+}
+
+.timeline-content.left:before {
+    content: '';
+    position: absolute;
+    left: 45%;
+    width: 0;
+    height: 0;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-left: 7px solid var(--work-color);
+}
+
+.timeline-content.right {
+    grid-column-start: 3;
+    grid-column-end: 3;
+    box-shadow: 0 3px 16px 4px #FFE6C7;
+}
+
+.timeline-content.right:before {
+    content: '';
+    position: absolute;
+    left: 55%;
+    width: 0;
+    height: 0;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-left: 0;
+    border-right: 7px solid var(--fun-color);
+    margin-left: -7px;
+}
+
+@media only screen and (max-width: 768px) {
+    .timeline-content.right:before {
+        display: none;
+    }
+
+    .timeline-content.left:before {
+        display: none;
+    }
+}
+
+.timeline-content > h2 {
+    padding: 15px;
+    background: var(--work-color);
+    color: #fff;
+    margin: -20px -20px 0 -20px;
+    font-weight: 500;
+    border-radius: 3px 3px 0 0;
+}
+
+.timeline-content.right > h2 {
+    background: var(--fun-color);
+}
+
+.timeline-images {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 2px;
+}
+
+.timeline-images > img {
+    width: 100%;
+    max-width: 100%;
+}
