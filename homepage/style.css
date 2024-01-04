@@ -1,4 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Cabin:wght@400;700&family=Jura:wght@600;700&display=swap');
+@font-face {
+    font-family: 'Jura';
+    font-display: swap;
+    src: url(/fonts/Jura/Jura.ttf) format('truetype');
+}
 
 html, body {
     width: 100vw;
