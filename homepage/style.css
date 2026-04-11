@@ -6,7 +6,7 @@
 
 html,
 body {
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   margin: 0;
   padding: 0;
@@ -15,6 +15,8 @@ body {
 
 header {
   font-family: "Jura", sans-serif;
+  opacity: 0;
+  transition: all 0.4s ease;
 }
 
 header > h1 {
@@ -32,13 +34,22 @@ header > h3 {
   margin-top: 12px;
 }
 
+header > h4 {
+  text-align: center;
+  color: #727272;
+}
+
+header > h4:last-child {
+  margin-bottom: 12px;
+}
+
 header > p {
   color: #727272;
 }
 
 .container {
   display: flex;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   flex-direction: row;
 }
@@ -73,11 +84,19 @@ header > p {
   animation: spy-reveal 500ms 250ms ease-in-out both;
 }
 
+.timeline-item-revealed {
+  animation: timeline-item-reveal 500ms 250ms ease-in both;
+}
+
+.faded {
+  animation: fade-in 500ms 250ms ease-in both;
+}
+
 footer {
   padding-bottom: 8px;
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 1024px) {
   .super-spy-chase-gale {
     width: 100%;
     height: 100vh;
@@ -89,6 +108,7 @@ footer {
     right: 0;
     left: 0;
     top: 0;
+    opacity: 0.4 !important;
   }
 
   header {
@@ -112,6 +132,18 @@ footer {
   }
 }
 
+@media only screen and (min-width: 1920px) {
+  .content {
+    width: 60%;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  #timeline {
+    width: 80% !important;
+  }
+}
+
 @keyframes spy-reveal {
   from {
     translate: 25% 0%;
@@ -119,6 +151,26 @@ footer {
   }
   to {
     translate: 0 0;
+    opacity: 1;
+  }
+}
+
+@keyframes timeline-item-reveal {
+  from {
+    transform: translateY(240px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
     opacity: 1;
   }
 }
